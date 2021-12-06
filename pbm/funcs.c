@@ -116,3 +116,33 @@ void savePBM(char *fname, Image *image)
   pnm_freepamrow(tuplerow);
   fclose(file);
 }
+
+
+
+// --------------------------------------------------------------------------------------------------
+
+ImageF * genlpfmask(int rows, int cols){
+  double filter[rows][cols];
+
+  for (int i = 0; i < rows; i++)
+  {
+    for (int j = 0; j < cols; j++)
+    {
+      if ((i < rows/4 || i < 3*rows/4) && (j < cols/4 || j > 3*cols/4))
+        filter[i][j] = 1.0;
+      else
+        filter[i][j] = 0.0;
+    }
+  }
+  ImageF filter_img;
+  filter_img.rows=rows;
+  filter_img.cols=cols;
+  filter_img.data=filter;
+  return filter_img;
+}
+
+// --------------------------------------------------------------------------------------------------
+
+void fti(ImageF * in_re, ImageF * in_img, ImageF * out_re, ImageF * out_img, int inverse){
+
+}
