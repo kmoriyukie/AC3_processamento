@@ -144,5 +144,24 @@ ImageF * genlpfmask(int rows, int cols){
 // --------------------------------------------------------------------------------------------------
 
 void fti(ImageF * in_re, ImageF * in_img, ImageF * out_re, ImageF * out_img, int inverse){
+  int R = in_re->rows;
+  int C = in_re->cols;
 
+  double transf[R][C];
+  if (inverse == 1)
+  {
+    /* Calcular DFT inversa */
+    for (int i = 0; i < R; i++)
+    {
+      for (int j = 0; j < C; j++)
+      {
+        // transf[i][j] += (1/(R*C))*in_re->(*data)[i][j]*exp(1*_Complex_I*2*M_PI)
+      }
+    }
+    
+  }
+  else
+  {
+    /* Calcular DFT */
+  }
 }
