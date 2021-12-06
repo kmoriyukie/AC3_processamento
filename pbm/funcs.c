@@ -147,17 +147,32 @@ void fti(ImageF * in_re, ImageF * in_img, ImageF * out_re, ImageF * out_img, int
   int R = in_re->rows;
   int C = in_re->cols;
 
+  int R_img = in_img->rows;
+  int C_img = in_img->cols;
+
   double transf[R][C];
+  double transf2[R][C];
   if (inverse == 1)
   {
     /* Calcular DFT inversa */
-    for (int i = 0; i < R; i++)
+    for (int i = 0; i < C; i++)
     {
-      for (int j = 0; j < C; j++)
+      for (int j = 0; j < R; j++)
       {
-        // transf[i][j] += (1/(R*C))*in_re->(*data)[i][j]*exp(1*_Complex_I*2*M_PI)
+        transf[j][i] += in_re->(*data)[j][i]*exp(1*_COMPLEX_I*2*M_PI*(i*i/R));
       }
+      out_re->(*data)[j][i] += (1/R*C)*transf[j][i]*exp(1*_COMPLEX_I*2*M_PI*(j*j/C));
     }
+
+    for (int i = 0; i < C_img; i++)
+      {
+        for (int j = 0; j < R_img; j++)
+        {
+          transf2[j][i] += in_img->(*data)[j][i]*exp(1*_COMPLEX_I*2*M_PI*(i*i/R_img));
+        }
+        out_img->(*data)[j][i] += (1/R*C)*transf2[j][i]*exp(1*_COMPLEX_I*2*M_PI*(j*j/C_img)); 
+      }
+
     
   }
   else
