@@ -6,6 +6,7 @@
         "functional": "c",
         "istream": "c",
         "tuple": "c",
-        "utility": "c"
+        "utility": "c",
+        "string": "c"
     }
 }

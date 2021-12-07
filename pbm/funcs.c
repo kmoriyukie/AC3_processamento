@@ -200,31 +200,30 @@ void fti(ImageF * in_re, ImageF * in_img, ImageF * out_re, ImageF * out_img, int
   }
 }
 //----------------------------------------------------------------------------------------------
-void dofilt(ImageF * in_re, ImageF * in_img,ImageF * mask, ImageF * out_re, ImageF * out_img)
+void dofilt(ImageF * in_re, ImageF * in_img, ImageF * mask, ImageF * out_re, ImageF * out_img)
 {
   int R = in_re->rows;
   int C = in_re->cols;
-
-  int R_img = in_img->rows;
-  int C_img = in_img->cols; 
-
-  int R_mask = mask->rows;
-  int C_mask = mask->cols;
-
-  double get[R][C];
+  double *get = (double *)malloc(rows*cols*sizeof(double)); 
+  double *get_img = (double *)malloc(rows*cols*sizeof(double));
+  double *get_mask = (double *)malloc(rows*cols*sizeof(double));
+  double *back_re = (double *)malloc(rows*cols*sizeof(double));
+  double *back_img = (double *)malloc(rows*cols*sizeof(double));
+  /*double get[R][C];
   double get_img[R_img][C_img];
-  double get_mask[R_mask][C_mask];
+  double get_mask[R_mask][C_mask];*/
 
   for(int i = 0; i<C; i++)
   {
     for(int j = 0; j<R; j++)
     {
-      get[j][i] = in_re->(*data)[j][i];
-      get_img[j][i] = in_img->(*data)[j][i];
-      get_mask[j][i] = mask->(*data)[j][i];
-      out_re->(*data)[j][i] = get[j][i]*get_mask[j][i];
-      out_img->(*data)[j][i] = get_img[j][i]*get_mask[j][i];
+      get[R*i+j] = in_re->(*data)[R*i+j];
+      get_img[R*i+j] = in_img->(*data)[R*i+j];
+      get_mask[R*i+j] = mask->(*data)[R*i+j];
+      back_re[R*i+j] = get[R*i+j]*get_mask[R*i+j];
+      back_img[R*i+j] = get_img[R*i+j]*get_mask[R*i+j];
     }
   }
-
+  out_re->data = back_re;
+  out_img->data = back_img;
 }
