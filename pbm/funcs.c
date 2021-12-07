@@ -212,7 +212,7 @@ void dofilt(ImageF * in_re, ImageF * in_img,ImageF * mask, ImageF * out_re, Imag
   int C_mask = mask->cols;
 
   double get[R][C];
-  double get_img[R][C];
+  double get_img[R_img][C_img];
   double get_mask[R_mask][C_mask];
 
   for(int i = 0; i<C; i++)
