@@ -128,7 +128,7 @@ ImageF * genlpfmask(int rows, int cols){
   {
     for (int j = 0; j < cols; j++)
     {
-      if ((i < rows/4 || i < 3*rows/4) && (j < cols/4 || j > 3*cols/4))
+      if ((i < rows/4 || i > 3*rows/4) && (j < cols/4 || j > 3*cols/4))
         filter[i][j] = 1.0;
       else
         filter[i][j] = 0.0;
@@ -178,5 +178,51 @@ void fti(ImageF * in_re, ImageF * in_img, ImageF * out_re, ImageF * out_img, int
   else
   {
     /* Calcular DFT */
+    for (int i = 0; i < C; i++)
+    {
+      for (int j = 0; j < R; j++)
+      {
+        transf[j][i] += in_re->(*data)[j][i]*exp(-1*_COMPLEX_I*2*M_PI*(i*i/R));
+      }
+      out_re->(*data)[j][i] += transf[j][i]*exp(-1*_COMPLEX_I*2*M_PI*(j*j/C));
+    }
+
+    for (int i = 0; i < C_img; i++)
+      {
+        for (int j = 0; j < R_img; j++)
+        {
+          transf2[j][i] += in_img->(*data)[j][i]*exp(-1*_COMPLEX_I*2*M_PI*(i*i/R_img));
+        }
+        out_img->(*data)[j][i] += transf2[j][i]*exp(-1*_COMPLEX_I*2*M_PI*(j*j/C_img)); 
+      }
   }
+}
+//----------------------------------------------------------------------------------------------
+void dofilt(ImageF * in_re, ImageF * in_img,ImageF * mask, ImageF * out_re, ImageF * out_img)
+{
+  int R = in_re->rows;
+  int C = in_re->cols;
+
+  int R_img = in_img->rows;
+  int C_img = in_img->cols; 
+
+  int R_mask = mask->rows;
+  int C_mask = mask->cols;
+
+  double get[R][C];
+  double get_img[R][C];
+  double get_mask[R_mask][C_mask];
+
+  for(int i = 0; i<C; i++)
+  {
+    for(int j = 0; j<R; j++)
+    {
+      get[j][i] = in_re->(*data)[j][i];
+      get_img[j][i] = in_img->(*data)[j][i];
+      get_mask[j][i] = mask->(*data)[j][i];
+      out_re->(*data)[j][i] = get[j][i]*get_mask[j][i];
+      out_img->(*data)[j][i] = get_img[j][i]*get_mask[j][i];
+    }
+  }
+
 }
