@@ -122,23 +122,25 @@ void savePBM(char *fname, Image *image)
 // --------------------------------------------------------------------------------------------------
 
 ImageF * genlpfmask(int rows, int cols){
-  double filter[rows][cols];
-
-  for (int i = 0; i < rows; i++)
-  {
-    for (int j = 0; j < cols; j++)
+    double *filter = (double *)malloc(rows*cols*sizeof(double));
+    ImageF *filter_img  = (ImageF *)malloc(sizeof(ImageF));
+    
+    for (int i = 0; i < rows; i++)
     {
-      if ((i < rows/4 || i > 3*rows/4) && (j < cols/4 || j > 3*cols/4))
-        filter[i][j] = 1.0;
-      else
-        filter[i][j] = 0.0;
+        for (int j = 0; j < cols; j++)
+        {
+            if ((i <= floor(rows/4.0) || i >= floor(3*rows/4.0)) && (j <= floor(cols/4.0) || j > 3*floor(cols/4.0))){
+                filter[i*rows+j] = 1.0;
+            }
+            else
+                filter[i*rows+j] = 0.0;
+        }
     }
-  }
-  ImageF filter_img;
-  filter_img.rows=rows;
-  filter_img.cols=cols;
-  filter_img.data=filter;
-  return filter_img;
+    filter_img->rows=rows;
+    filter_img->cols=cols;
+    filter_img->data=filter;
+    filter_img->widthStep=rows;
+    return filter_img;
 }
 
 // --------------------------------------------------------------------------------------------------
@@ -150,8 +152,8 @@ void fti(ImageF * in_re, ImageF * in_img, ImageF * out_re, ImageF * out_img, int
   int R_img = in_img->rows;
   int C_img = in_img->cols;
 
-  double transf[R][C];
-  double transf2[R][C];
+  double *transf = (double *) malloc(R*C*sizeof(double));
+  double *transf2 = (double *) malloc(R_img*C_img*sizeof(double));
   if (inverse == 1)
   {
     /* Calcular DFT inversa */
@@ -159,7 +161,7 @@ void fti(ImageF * in_re, ImageF * in_img, ImageF * out_re, ImageF * out_img, int
     {
       for (int j = 0; j < R; j++)
       {
-        transf[j][i] += in_re->(*data)[j][i]*exp(1*_COMPLEX_I*2*M_PI*(i*i/R));
+        transf[j*R+i] += in_re->(*data)[j][i]*exp(1*_COMPLEX_I*2*M_PI*(i*i/R));
       }
       out_re->(*data)[j][i] += (1/R*C)*transf[j][i]*exp(1*_COMPLEX_I*2*M_PI*(j*j/C));
     }

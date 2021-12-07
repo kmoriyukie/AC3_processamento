@@ -9,7 +9,7 @@ int main(){
     
     img.rows=128;
     img.cols=128;
-    img.widthStep=128;
+    img.widthStep=128; // Largura da linha + padding (se existir)
     
     img.data=(double *)malloc(img.rows*img.cols*sizeof(double));
 
