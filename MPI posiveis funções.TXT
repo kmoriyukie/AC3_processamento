@@ -1,0 +1,7 @@
+genlp
+	Procurar algum que faça o loop For mais rápido
+fti
+	https://www.mpich.org//static/docs/latest/www3/MPI_Reduce.html
+	https://www.mpich.org//static/docs/latest/www3/MPI_Allreduce.html
+dofilt
+	Procurar algum que faça o loop For mais rápido
