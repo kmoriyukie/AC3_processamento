@@ -4,7 +4,7 @@
 #include <pam.h>
 #endif
 #include "funcs.h"
-
+#include "mpi.h"
 ImageF * genlpfmask(int rows, int cols){
     double *filter = (double *)malloc(rows*cols*sizeof(double));
     ImageF *filter_img  = (ImageF *)malloc(sizeof(ImageF));
