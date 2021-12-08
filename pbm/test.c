@@ -84,8 +84,37 @@ void fti(ImageF * in_re, ImageF * in_img, ImageF * out_re, ImageF * out_img, int
     }
 }
 
+void dofilt(ImageF * in_re, ImageF * in_img, ImageF * mask, ImageF * out_re, ImageF * out_img)
+{
+  int rows = in_re->rows;
+  int cols = in_re->cols;
+  double *back_re = (double *)malloc(rows*cols*sizeof(double));
+  double *back_img = (double *)malloc(rows*cols*sizeof(double));
+
+  out_re->rows = in_re->rows;
+  out_re->cols = in_re->cols;
+  out_re->widthStep = in_re->widthStep;
+
+  out_img->rows = in_img->rows;
+  out_img->cols = in_img->cols;
+  out_img->widthStep = in_img->widthStep;
+  
+  for(int i = 0; i < rows; i++)
+  {
+    for(int j = 0; j < cols; j++)
+    {
+      back_re[in_re->widthStep*i+j] = in_re->data[in_re->widthStep*i+j]*mask->data[mask->widthStep*i+j];
+      back_img[in_img->widthStep*i+j] = in_img->data[in_img->widthStep*i+j]*mask->data[mask->widthStep*i+j];
+    }
+  }
+  out_re->data = back_re;
+  out_img->data = back_img;
+}
+
+
 int main(){
-    ImageF img, *img2;
+    ImageF img, *mask;
+    ImageF *img2 = (ImageF *)malloc(sizeof(ImageF));
     ImageF *img3  = (ImageF *)malloc(sizeof(ImageF));
     ImageF *img4  = (ImageF *)malloc(sizeof(ImageF));
     Image imgout;
@@ -96,6 +125,13 @@ int main(){
     img.widthStep=10; // Largura da linha + padding (se existir)
     
     img.data=(double *)malloc(img.rows*img.cols*sizeof(double));
+
+    img2->rows=10;
+    img2->cols=10;
+    img2->widthStep=10; // Largura da linha + padding (se existir)
+    
+    img2->data=(double *)malloc(img.rows*img.cols*sizeof(double));
+
 
     img3->rows=10;
     img3->cols=10;
@@ -110,25 +146,27 @@ int main(){
     img4->data=(double *)malloc(img.rows*img.cols*sizeof(double));
 
     for (i=0;i<img.rows;i++)
-	for (j=0;j<img.rows;j++)
-	    img.data[img.widthStep*i+j]=128.0;
+        for (j=0;j<img.rows;j++){
+            img.data[img.widthStep*i+j]=128.0;
+            img2->data[img2->widthStep*i+j] = 7;
+        }
 
-    img2 = genlpfmask(10, 10);
-    fti(&img, img2, img3, img4, 0);
+    mask = genlpfmask(10, 10);
+    dofilt(&img, img2, mask, img3, img4);
+    for (int i = 0; i < 10; i++)
+    {
+        for (int j = 0; j < 10; j++)
+        {
+            printf("%03g ", img3->data[i*10+j]);
+        }
+        printf("row: %d\n", i);
+    }
+    // fti(img3, img4, &img, img2, 1);
     for (int i = 0; i < 10; i++)
     {
         for (int j = 0; j < 10; j++)
         {
             printf("%03g ", img4->data[i*10+j]);
-        }
-        printf("rows: %d\n", img2->rows);
-    }
-    fti(img3, img4, &img, img2, 1);
-    for (int i = 0; i < 10; i++)
-    {
-        for (int j = 0; j < 10; j++)
-        {
-            printf("%03g ", img.data[i*10+j]);
         }
         printf("rows: %d\n", img.rows);
     }
