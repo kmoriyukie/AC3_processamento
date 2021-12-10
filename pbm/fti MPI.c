@@ -40,7 +40,7 @@ void fti(ImageF * in_re, ImageF * in_img, ImageF * out_re, ImageF * out_img, int
                 MPI_Reduce( &transf[l*in_re->widthStep+k] , &transf[l*in_re->widthStep+k] , countm , MPI_DOUBLE , MPI_SUM , 0 , MPI_COMM_WORLD); 
                 MPI_Reduce( &transf2[l*in_img->widthStep+k] , &transf2[l*in_img->widthStep+k] , countm , MPI_DOUBLE , MPI_SUM , 0 , MPI_COMM_WORLD); 
                 out_re->data[l*in_re->widthStep + k] = (1.0/(in_re->cols*in_re->rows))*transf[l*in_re->widthStep+k];
-                out_img->data[l*in_re->widthStep + k] = (1.0/(in_img->cols*in_img->rows))*transf[l*in_img->widthStep+k];
+                out_img->data[l*in_re->widthStep + k] = (1.0/(in_img->cols*in_img->rows))*transf2[l*in_img->widthStep+k];
             }
             else{
                 for (int m = id; m < in_re->cols; m+=numproc)
@@ -60,7 +60,7 @@ void fti(ImageF * in_re, ImageF * in_img, ImageF * out_re, ImageF * out_img, int
                 MPI_Reduce( &transf[l*in_re->widthStep+k] , &transf[l*in_re->widthStep+k] , countm , MPI_DOUBLE , MPI_SUM , 0 , MPI_COMM_WORLD); 
                 MPI_Reduce( &transf2[l*in_img->widthStep+k] , &transf2[l*in_img->widthStep+k] , countm , MPI_DOUBLE , MPI_SUM , 0 , MPI_COMM_WORLD); 
                 out_re->data[l*in_re->widthStep + k] = transf[l*in_re->widthStep+k];
-                out_img->data[l*in_re->widthStep + k] = transf[l*in_img->widthStep+k];
+                out_img->data[l*in_re->widthStep + k] = transf2[l*in_img->widthStep+k];
             }
         }
     }
