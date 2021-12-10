@@ -129,7 +129,7 @@ ImageF * genlpfmask(int rows, int cols){
     {
         for (int j = 0; j < cols; j++)
         {
-            if ((i <= floor(rows/4.0) || i >= floor(3*rows/4.0)) && (j <= floor(cols/4.0) || j > 3*floor(cols/4.0))){
+            if ((i < rows/4.0 || i >= 3*rows/4.0) && (j < cols/4.0 || j >= 3*cols/4.0)){
                 filter[i*rows+j] = 1.0;
             }
             else
@@ -213,4 +213,20 @@ void dofilt(ImageF * in_re, ImageF * in_img, ImageF * mask, ImageF * out_re, Ima
   }
   out_re->data = back_re;
   out_img->data = back_img;
+}
+//----------------------------------------------------------------------------------------
+ImageF newImageF(int rows, int cols, int widthStep){
+  ImageF *img  = (ImageF *)malloc(sizeof(ImageF));
+  img->cols = cols;
+  img->rows = rows;
+  img->widthStep = cols;
+  return *img;
+}
+//----------------------------------------------------------------------------------------
+Image newImage(int rows, int cols, int widthStep){
+  Image *img  = (Image *)malloc(sizeof(Image));
+  img->cols = cols;
+  img->rows = rows;
+  img->widthStep = cols;
+  return *img;
 }
