@@ -168,7 +168,7 @@ void fti(ImageF * in_re, ImageF * in_img, ImageF * out_re, ImageF * out_img, int
                     transf2[l*in_img->widthStep + k] += transf4[l*in_img->widthStep+m]*exp(1*_Complex_I*2*M_PI*(k*m/in_img->cols))/m;
                 }
                 out_re->data[l*in_re->widthStep + k] = (1.0/(in_re->cols*in_re->rows))*transf[l*in_re->widthStep+k];
-                out_img->data[l*in_re->widthStep + k] = (1.0/(in_img->cols*in_img->rows))*transf[l*in_img->widthStep+k];
+                out_img->data[l*in_re->widthStep + k] = (1.0/(in_img->cols*in_img->rows))*transf2[l*in_img->widthStep+k];
             }
             else{
                 for (int m = 0; m < in_re->cols; m++)
@@ -182,7 +182,7 @@ void fti(ImageF * in_re, ImageF * in_img, ImageF * out_re, ImageF * out_img, int
                     transf2[l*in_img->widthStep + k] += transf4[l*in_img->widthStep+m]*exp(-1*_Complex_I*2*M_PI*(k*m/in_img->cols));
                 }
                 out_re->data[l*in_re->widthStep + k] = transf[l*in_re->widthStep+k];
-                out_img->data[l*in_re->widthStep + k] = transf[l*in_img->widthStep+k];
+                out_img->data[l*in_re->widthStep + k] = transf2[l*in_img->widthStep+k];
             }
         }
     }
