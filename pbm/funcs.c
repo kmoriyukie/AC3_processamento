@@ -130,7 +130,7 @@ ImageF * genlpfmask(int rows, int cols){
         for (int j = 0; j < cols; j++)
         {
             if ((i < rows/4.0 || i >= 3*rows/4.0) && (j < cols/4.0 || j >= 3*cols/4.0)){
-                filter[i*rows+j] = 1.0;
+                filter[i*rows+j] = 255.0;
             }
             else
                 filter[i*rows+j] = 0.0;
@@ -194,21 +194,13 @@ void dofilt(ImageF * in_re, ImageF * in_img, ImageF * mask, ImageF * out_re, Ima
   int cols = in_re->cols;
   double *back_re = (double *)malloc(rows*cols*sizeof(double));
   double *back_img = (double *)malloc(rows*cols*sizeof(double));
-  
-  out_re->rows = in_re->rows;
-  out_re->cols = in_re->cols;
-  out_re->widthStep = in_re->widthStep;
-
-  out_img->rows = in_img->rows;
-  out_img->cols = in_img->cols;
-  out_img->widthStep = in_img->widthStep;
 
   for(int i = 0; i < rows; i++)
   {
     for(int j = 0; j < cols; j++)
     {
-      back_re[in_re->widthStep*i+j] = in_re->data[in_re->widthStep*i+j]*mask->data[mask->widthStep*i+j];
-      back_img[in_img->widthStep*i+j] = in_img->data[in_img->widthStep*i+j]*mask->data[mask->widthStep*i+j];
+      back_re[in_re->widthStep*j+i] = in_re->data[in_re->widthStep*j+i]*mask->data[mask->widthStep*j+i]/255;
+      back_img[in_img->widthStep*j+i] = in_img->data[in_img->widthStep*j+i]*mask->data[mask->widthStep*j+i]/255;
     }
   }
   out_re->data = back_re;
@@ -220,6 +212,7 @@ ImageF newImageF(int rows, int cols, int widthStep){
   img->cols = cols;
   img->rows = rows;
   img->widthStep = cols;
+  img->data = (double*)malloc(cols*rows*sizeof(double));
   return *img;
 }
 //----------------------------------------------------------------------------------------
@@ -229,4 +222,33 @@ Image newImage(int rows, int cols, int widthStep){
   img->rows = rows;
   img->widthStep = cols;
   return *img;
+}
+//----------------------------------------------------------------------------------------
+double * uchar2db(unsigned char *data, int rows, int cols){
+  double * my_double = (double*) malloc(rows*cols*sizeof(double));
+
+  for (int i = 0; i < rows; i++)
+  {
+    for (int j = 0; j < cols; j++)
+    {
+      my_double[i + j*cols] = (double) data[i + j*cols];
+    } 
+  }
+  
+  return my_double;
+}
+//----------------------------------------------------------------------------------------
+unsigned char * db2uchar(double * data, int rows, int cols){
+  unsigned char * my_uchar = (unsigned char *) malloc(rows*cols);
+
+  for (int i = 0; i < rows; i++)
+  {
+    for (int j = 0; j < cols; j++)
+    {
+      my_uchar[i + j*cols] = (unsigned char) data[i+ j*cols];
+    }
+    
+  }
+  return my_uchar;
+
 }

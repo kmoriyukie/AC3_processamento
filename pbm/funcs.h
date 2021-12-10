@@ -40,3 +40,5 @@ struct timespec SubtracaoTempo(struct timespec Inicio, struct timespec Fim);
 void teste(ImageF * , ImageF *);
 ImageF newImageF(int rows, int cols, int widthStep);
 Image newImage(int rows, int cols, int widthStep);
+double * uchar2db(unsigned char *data, int rows, int cols);
+unsigned char * db2uchar(double * data, int rows, int cols);
