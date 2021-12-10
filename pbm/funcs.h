@@ -37,5 +37,6 @@ ImageF * genlpfmask(int , int);
 void dofilt(ImageF * , ImageF * , ImageF * , ImageF * , ImageF * );
 void fti(ImageF *, ImageF *, ImageF *, ImageF *, int);
 struct timespec SubtracaoTempo(struct timespec Inicio, struct timespec Fim);
-
 void teste(ImageF * , ImageF *);
+ImageF newImageF(int rows, int cols, int widthStep);
+Image newImage(int rows, int cols, int widthStep);

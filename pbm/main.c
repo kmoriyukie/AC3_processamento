@@ -3,33 +3,37 @@
 #include "funcs.h"
 
 int main(){
-    ImageF img, img2;
+    Image* imgin;
+    ImageF img, img2, img3, img4;
     Image imgout;
     int i,j;
+
+    imgin = loadPBM("quokka.pgm");
+    img = newImageF(200, 200, 200);
+    img2 = newImageF(img.rows, img.cols, img.widthStep);
+    img3 = newImageF(img.rows, img.cols, img.widthStep);
+    img4 = newImageF(img.rows, img.cols, img.widthStep);
+
+    img.data = (double*) imgin->data;
+    img2.data = (double*) imgin->data;
+    img3.data = (double*) imgin->data;
+    img4.data = (double*) imgin->data;
+    ImageF *mask = genlpfmask(img.rows, img.cols);
+
+    printf("after mask create\n");
+     
+    // printf("img2.rows = %d, img2.cols = %d\n", img2.rows, img2.cols);
+
+    // dofilt(&img, &img2, mask, &img3, &img4);
+    printf("after filt");
     
-    img.rows=128;
-    img.cols=128;
-    img.widthStep=128; // Largura da linha + padding (se existir)
-    
-    img.data=(double *)malloc(img.rows*img.cols*sizeof(double));
-
-    for (i=0;i<img.rows;i++)
-	for (j=0;j<img.rows;j++)
-	    img.data[img.widthStep*i+j]=128.0;
-
-
-    img2.rows=128;
-    img2.cols=128;
-    img2.widthStep=128;
-
-    img2.data=(double *)malloc(img.rows*img.cols*sizeof(double));
-
-    teste(&img,&img2);
-
-    imgout.rows=128;
-    imgout.cols=128;
-    imgout.widthStep=128;
+    imgout.rows=img.rows;
+    imgout.cols=img.cols;
+    imgout.widthStep=img.widthStep;
     imgout.data=(unsigned char *) malloc(imgout.rows *imgout.cols);
+    
+    printf("c");
+    imgout.data = (unsigned char*) mask->data;
     savePBM("img.pbm",&imgout);
 }
 
