@@ -149,6 +149,8 @@ void fti(ImageF * in_re, ImageF * in_img, ImageF * out_re, ImageF * out_img, int
 
   double *transf = (double *) malloc(in_re->rows*in_re->cols*sizeof(double));
   double *transf2 = (double *) malloc(in_img->rows*in_img->cols*sizeof(double));
+  double *transf3 = (double *) malloc(in_img->rows*in_img->cols*sizeof(double));
+  double *transf4 = (double *) malloc(in_img->rows*in_img->cols*sizeof(double));
 
     for (int k = 0; k < in_re->cols; k++)
     {
@@ -159,11 +161,11 @@ void fti(ImageF * in_re, ImageF * in_img, ImageF * out_re, ImageF * out_img, int
                 {
                     for (int n = 0; n < in_re->rows; n++)
                     {
-                        transf[n*in_re->widthStep+k] += in_re->data[n*in_re->widthStep+k]*exp(1*_Complex_I*2*M_PI*(l*n/in_re->rows));
-                        transf2[n*in_img->widthStep+k] += in_img->data[n*in_img->widthStep+k]*exp(1*_Complex_I*2*M_PI*(l*n/in_img->rows));                        
+                        transf3[l*in_re->widthStep+k] += in_re->data[n*in_re->widthStep+k]*exp(1*_Complex_I*2*M_PI*(l*n/in_re->rows));
+                        transf4[l*in_img->widthStep+k] += in_img->data[n*in_img->widthStep+k]*exp(1*_Complex_I*2*M_PI*(l*n/in_img->rows));                        
                     }
-                    transf[l*in_re->widthStep + m] += transf[l*in_re->widthStep+m]*exp(1*_Complex_I*2*M_PI*(k*m/in_re->cols));
-                    transf2[l*in_img->widthStep + m] += transf2[l*in_img->widthStep+m]*exp(1*_Complex_I*2*M_PI*(k*m/in_img->cols));
+                    transf[l*in_re->widthStep + k] += transf3[l*in_re->widthStep+m]*exp(1*_Complex_I*2*M_PI*(k*m/in_re->cols));
+                    transf2[l*in_img->widthStep + k] += transf4[l*in_img->widthStep+m]*exp(1*_Complex_I*2*M_PI*(k*m/in_img->cols));
                 }
                 out_re->data[l*in_re->widthStep + k] = (1.0/(in_re->cols*in_re->rows))*transf[l*in_re->widthStep+k];
                 out_img->data[l*in_re->widthStep + k] = (1.0/(in_img->cols*in_img->rows))*transf[l*in_img->widthStep+k];
@@ -173,11 +175,11 @@ void fti(ImageF * in_re, ImageF * in_img, ImageF * out_re, ImageF * out_img, int
                 {
                     for (int n = 0; n < in_re->rows; n++)
                     {
-                        transf[n*in_re->widthStep+k] += in_re->data[n*in_re->widthStep+k]*exp(-1*_Complex_I*2*M_PI*(l*n/in_re->rows));
-                        transf2[n*in_img->widthStep+k] += in_img->data[n*in_img->widthStep+k]*exp(-1*_Complex_I*2*M_PI*(l*n/in_img->rows));                        
+                        transf3[l*in_re->widthStep+k] += in_re->data[n*in_re->widthStep+k]*exp(-1*_Complex_I*2*M_PI*(l*n/in_re->rows));
+                        transf4[l*in_img->widthStep+k] += in_img->data[n*in_img->widthStep+k]*exp(-1*_Complex_I*2*M_PI*(l*n/in_img->rows));                       
                     }
-                    transf[l*in_re->widthStep + m] += transf[l*in_re->widthStep+m]*exp(-1*_Complex_I*2*M_PI*(k*m/in_re->cols));
-                    transf2[l*in_img->widthStep + m] += transf2[l*in_img->widthStep+m]*exp(-1*_Complex_I*2*M_PI*(k*m/in_img->cols));
+                    transf[l*in_re->widthStep + k] += transf3[l*in_re->widthStep+m]*exp(-1*_Complex_I*2*M_PI*(k*m/in_re->cols));
+                    transf2[l*in_img->widthStep + k] += transf4[l*in_img->widthStep+m]*exp(-1*_Complex_I*2*M_PI*(k*m/in_img->cols));
                 }
                 out_re->data[l*in_re->widthStep + k] = transf[l*in_re->widthStep+k];
                 out_img->data[l*in_re->widthStep + k] = transf[l*in_img->widthStep+k];
