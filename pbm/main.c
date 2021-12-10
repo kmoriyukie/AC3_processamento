@@ -12,7 +12,7 @@ int main(){
     int rows = imgin->rows;
     int cols = imgin->cols;
     int step = imgin->widthStep;
-    
+    MPI_Init( int* argc , char*** argv);
     img = newImageF(rows, cols, step);
     img2 = newImageF(rows, cols, step);
     img3 = newImageF(rows, cols, step);
@@ -49,6 +49,7 @@ int main(){
 
     imgout.data = data;
     savePBM("img.pbm",&imgout);
+    MPI_Finalize();
 }
 
     

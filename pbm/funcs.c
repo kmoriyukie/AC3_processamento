@@ -125,7 +125,7 @@ ImageF * genlpfmask(int rows, int cols){
     double *filter = (double *)malloc(rows*cols*sizeof(double));
     ImageF *filter_img  = (ImageF *)malloc(sizeof(ImageF));
     int id, numproc;
-    MPI_Init( int* argc , char*** argv);
+    
     MPI_Comm_rank( MPI_COMM_WORLD , &id);
     MPI_Comm_size( MPI_COMM_WORLD , &numproc);
     for (int i = id; i < rows; i+=numproc)
@@ -139,7 +139,7 @@ ImageF * genlpfmask(int rows, int cols){
                 filter[i*rows+j] = 0.0;
         }
     }
-    MPI_Finalize();
+    
     filter_img->rows=rows;
     filter_img->cols=cols;
     filter_img->data=filter;
@@ -156,7 +156,6 @@ void fti(ImageF * in_re, ImageF * in_img, ImageF * out_re, ImageF * out_img, int
   double *transf3 = (double *) malloc(in_img->rows*in_img->cols*sizeof(double));
   double *transf4 = (double *) malloc(in_img->rows*in_img->cols*sizeof(double));
   int id, numproc, countn, countm;
-  MPI_Init( int* argc , char*** argv);
   MPI_Comm_rank( MPI_COMM_WORLD , &id);
   MPI_Comm_size( MPI_COMM_WORLD , &numproc);
   countn = 0;
@@ -207,7 +206,7 @@ void fti(ImageF * in_re, ImageF * in_img, ImageF * out_re, ImageF * out_img, int
             }
         }
     }
-    MPI_Finalize();
+    
 }
 //----------------------------------------------------------------------------------------------
 void dofilt(ImageF * in_re, ImageF * in_img, ImageF * mask, ImageF * out_re, ImageF * out_img)
@@ -217,7 +216,7 @@ void dofilt(ImageF * in_re, ImageF * in_img, ImageF * mask, ImageF * out_re, Ima
   double *back_re = (double *)malloc(rows*cols*sizeof(double));
   double *back_img = (double *)malloc(rows*cols*sizeof(double));
   int id, numproc;
-  MPI_Init( int* argc , char*** argv);
+  
   MPI_Comm_rank( MPI_COMM_WORLD , &id);
   MPI_Comm_size( MPI_COMM_WORLD , &numproc);
 
@@ -229,7 +228,7 @@ void dofilt(ImageF * in_re, ImageF * in_img, ImageF * mask, ImageF * out_re, Ima
       back_img[in_img->widthStep*i+j] = in_img->data[in_img->widthStep*i+j]*mask->data[mask->widthStep*i+j];
     }
   }
-  MPI_Finalize();
+  
   out_re->data = back_re;
   out_img->data = back_img;
 }
