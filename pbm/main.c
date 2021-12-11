@@ -8,7 +8,7 @@ int main(){
     Image imgout;
     int i,j;
 
-    imgin = loadPBM("sample.pgm");
+    imgin = loadPBM("lena2.pgm");
     
     int rows = imgin->rows;
     int cols = imgin->cols;
@@ -41,15 +41,10 @@ int main(){
     printf("\nFinished filtering! Starting IDFT!\n");
     fti(&img, &img2, &img3, &img4, 1);
     printf("\nFinished IDFT!\n");
+    
     for (int i = 0; i < rows; i++)
-    {
         for (int j = 0; j < cols; j++)
-        {
             img3.data[j*img3.widthStep+i] = cabs(img3.data[j*img3.widthStep+i] + _Complex_I*img4.data[j*img3.widthStep+i]);
-            printf("%g ",img3.data[j*img3.widthStep+i]);
-        }
-        printf("\n");
-    }
     
     data = db2uchar(img3.data, rows, cols);
     imgout.rows=rows;

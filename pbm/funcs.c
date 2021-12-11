@@ -166,11 +166,11 @@ void fti(ImageF * in_re, ImageF * in_img, ImageF * out_re, ImageF * out_img, int
             {
                 for (int n = 0; n < rows; n++)
                 {
-                    theta = 2*M_PI*((double)l*n/rows);
-                    transf2 += (in_re->data[m*step+n]+ _Complex_I*in_img->data[m*step + n])*(cos(theta) + _Complex_I*sin(theta));                      
+                    theta = 2.0*M_PI*((double)l*n/rows);
+                    transf2 += (in_re->data[m*step+n]+ _Complex_I*in_img->data[m*step + n])*cexp(_Complex_I*theta);                      
                 }
                 theta = 2*M_PI*((double)k*m/cols);
-                transf  += transf2*(cos(theta) + _Complex_I*sin(theta));
+                transf  += transf2*cexp(_Complex_I*theta);
             }
         }
         else{
@@ -178,11 +178,11 @@ void fti(ImageF * in_re, ImageF * in_img, ImageF * out_re, ImageF * out_img, int
             {
               for (int n = 0; n < rows; n++)
                 {
-                    theta = -2*M_PI*((double)l*n/rows);
-                    transf2 += (in_re->data[m*step+n]+ _Complex_I*in_img->data[m*step + n])*(cos(theta) + _Complex_I*sin(theta));                      
+                    theta = -2.0*M_PI*((double)l*n/rows);
+                    transf2 += (in_re->data[m*step+n]+ _Complex_I*in_img->data[m*step + n])*cexp(_Complex_I*theta);                      
                 }
-                theta = -2*M_PI*((double)k*m/cols);
-                transf  += transf2*(cos(theta) + _Complex_I*sin(theta));
+                theta = -2.0*M_PI*((double)k*m/cols);
+                transf  += transf2*cexp(_Complex_I*theta);
             }
             transf /= cols*rows;
         }
