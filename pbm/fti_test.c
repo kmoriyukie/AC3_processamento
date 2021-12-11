@@ -25,10 +25,10 @@ void fti(ImageF * in_re, ImageF * in_img, ImageF * out_re, ImageF * out_img, int
                 {
                     for (int n = 0; n < in_re->rows; n++)
                     {
-                        transf3[l*in_re->widthStep+k] += in_re->data[n*in_re->widthStep+m]*exp(1*_Complex_I*2*M_PI*(l*n/in_re->rows))/(n+1);
-                        transf4[l*in_img->widthStep+k] += in_img->data[n*in_img->widthStep+m]*exp(1*_Complex_I*2*M_PI*(l*n/in_img->rows))/(n+1); 
-                        transf[l*in_re->widthStep + k] += transf5[n*in_re->widthStep+m]*exp(1*_Complex_I*2*M_PI*(k*m/in_re->cols))/(m+1);
-                        transf2[l*in_img->widthStep + k] += transf6[n*in_img->widthStep+m]*exp(1*_Complex_I*2*M_PI*(k*m/in_img->cols))/(m+1);                    
+                        transf3[l*in_re->widthStep+k] += in_re->data[n*in_re->widthStep+m]*cexp(1*_Complex_I*2*M_PI*(l*n/in_re->rows))/(in_re->rows);
+                        transf4[l*in_img->widthStep+k] += in_img->data[n*in_img->widthStep+m]*cexp(1*_Complex_I*2*M_PI*(l*n/in_img->rows))/(in_re->rows); 
+                        transf[l*in_re->widthStep + k] += transf3[n*in_re->widthStep+m]*cexp(1*_Complex_I*2*M_PI*(k*m/in_re->cols))/(in_re->cols);
+                        transf2[l*in_img->widthStep + k] += transf4[n*in_img->widthStep+m]*cexp(1*_Complex_I*2*M_PI*(k*m/in_img->cols))/(in_re->cols);                    
                     }
                     
                 }
@@ -40,10 +40,10 @@ void fti(ImageF * in_re, ImageF * in_img, ImageF * out_re, ImageF * out_img, int
                 {
                     for (int n = 0; n < in_re->rows; n++)
                     {
-                        transf3[l*in_re->widthStep+k] += in_re->data[n*in_re->widthStep+k]*exp(-1*_Complex_I*2*M_PI*(l*n/in_re->rows));
-                        transf4[l*in_img->widthStep+k] += in_img->data[n*in_img->widthStep+k]*exp(-1*_Complex_I*2*M_PI*(l*n/in_img->rows));  
-                        transf[l*in_re->widthStep + k] += transf5[l*in_re->widthStep+m]*exp(-1*_Complex_I*2*M_PI*(k*m/in_re->cols));
-                        transf2[l*in_img->widthStep + k] += transf6[l*in_img->widthStep+m]*exp(-1*_Complex_I*2*M_PI*(k*m/in_img->cols));                    
+                        transf3[l*in_re->widthStep+k] += in_re->data[n*in_re->widthStep+k]*cexp(-1*_Complex_I*2*M_PI*(l*n/in_re->rows));
+                        transf4[l*in_img->widthStep+k] += in_img->data[n*in_img->widthStep+k]*cexp(-1*_Complex_I*2*M_PI*(l*n/in_img->rows));  
+                        transf[l*in_re->widthStep + k] += transf3[l*in_re->widthStep+m]*cexp(-1*_Complex_I*2*M_PI*(k*m/in_re->cols));
+                        transf2[l*in_img->widthStep + k] += transf4[l*in_img->widthStep+m]*cexp(-1*_Complex_I*2*M_PI*(k*m/in_img->cols));                    
                     }
 
                 }
