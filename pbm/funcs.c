@@ -124,26 +124,27 @@ void savePBM(char *fname, Image *image)
 ImageF * genlpfmask(int rows, int cols){
     double *filter = (double *)malloc(rows*cols*sizeof(double));
     ImageF *filter_img  = (ImageF *)malloc(sizeof(ImageF));
-    int id, numproc;
     
+<<<<<<< HEAD
+=======
     MPI_Comm_rank( MPI_COMM_WORLD , &id);
     MPI_Comm_size( MPI_COMM_WORLD , &numproc);
+>>>>>>> origin
     for (int i = 0; i < rows; i++)
     {
-        for (int j = id; j < cols; j+=numproc)
+        for (int j = 0; j < cols; j++)
         {
-            if ((i <= floor(rows/4.0) || i >= floor(3*rows/4.0)) && (j <= floor(cols/4.0) || j > 3*floor(cols/4.0))){
+            if ((i < rows/4.0 || i >= 3*rows/4.0) && (j < cols/4.0 || j >= 3*cols/4.0)){
                 filter[i*rows+j] = 1.0;
             }
             else
                 filter[i*rows+j] = 0.0;
         }
     }
-    
     filter_img->rows=rows;
     filter_img->cols=cols;
     filter_img->data=filter;
-    filter_img->widthStep=rows;
+    filter_img->widthStep=cols;
     return filter_img;
 }
 
@@ -151,6 +152,32 @@ ImageF * genlpfmask(int rows, int cols){
 
 void fti(ImageF * in_re, ImageF * in_img, ImageF * out_re, ImageF * out_img, int inverse){
 
+<<<<<<< HEAD
+  double complex transf = 0;
+  double complex transf2 = 0;
+  
+  double complex transf_re = 0;
+  double complex transf2_img = 0;
+  double complex theta = 0;
+  int rows = in_re->rows;
+  int cols = in_re->cols;
+  int step = in_re->cols;
+  
+  for (int k = 0; k < cols; k++)
+  {
+      for (int l = 0; l < rows; l++)
+      {
+        if(inverse == 0){
+            for (int m = 0; m < cols; m++)
+            {
+                for (int n = 0; n < rows; n++)
+                {
+                    theta = 2.0*M_PI*((double)l*n/rows);
+                    transf2 += (in_re->data[m*step+n]+ _Complex_I*in_img->data[m*step + n])*cexp(_Complex_I*theta);                      
+                }
+                theta = 2*M_PI*((double)k*m/cols);
+                transf  += transf2*cexp(_Complex_I*theta);
+=======
   double *transf = (double *) malloc(in_re->rows*in_re->cols*sizeof(double));
   double *transf2 = (double *) malloc(in_img->rows*in_img->cols*sizeof(double));
   double *transf3 = (double *) malloc(in_img->rows*in_img->cols*sizeof(double));
@@ -207,10 +234,28 @@ void fti(ImageF * in_re, ImageF * in_img, ImageF * out_re, ImageF * out_img, int
                 MPI_Reduce( &transf8[l*in_img->widthStep+k] , &transf2[l*in_img->widthStep+k] , countm , MPI_DOUBLE , MPI_SUM , 0 , MPI_COMM_WORLD); 
                 out_re->data[l*in_re->widthStep + k] = transf7[l*in_re->widthStep+k];
                 out_img->data[l*in_re->widthStep + k] = transf8[l*in_img->widthStep+k];
+>>>>>>> origin
             }
         }
-    }
-    
+        else{
+            for (int m = 0; m < cols; m++)
+            {
+              for (int n = 0; n < rows; n++)
+                {
+                    theta = -2.0*M_PI*((double)l*n/rows);
+                    transf2 += (in_re->data[m*step+n]+ _Complex_I*in_img->data[m*step + n])*cexp(_Complex_I*theta);                      
+                }
+                theta = -2.0*M_PI*((double)k*m/cols);
+                transf  += transf2*cexp(_Complex_I*theta);
+            }
+            transf /= cols*rows;
+        }
+        out_re->data[l + step*k] = creal(transf);
+        out_img->data[l + step*k] = cimag(transf);
+        transf=0;
+        transf2=0;    
+      }
+  }
 }
 //----------------------------------------------------------------------------------------------
 void dofilt(ImageF * in_re, ImageF * in_img, ImageF * mask, ImageF * out_re, ImageF * out_img)
@@ -219,20 +264,19 @@ void dofilt(ImageF * in_re, ImageF * in_img, ImageF * mask, ImageF * out_re, Ima
   int cols = in_re->cols;
   double *back_re = (double *)malloc(rows*cols*sizeof(double));
   double *back_img = (double *)malloc(rows*cols*sizeof(double));
-  int id, numproc;
-  
-  MPI_Comm_rank( MPI_COMM_WORLD , &id);
-  MPI_Comm_size( MPI_COMM_WORLD , &numproc);
 
+<<<<<<< HEAD
+  for(int i = 0; i < rows; i++)
+=======
   for(int i = id; i < rows; i+=numproc)
+>>>>>>> origin
   {
     for(int j = 0; j < cols; j++)
     {
-      back_re[in_re->widthStep*i+j] = in_re->data[in_re->widthStep*i+j]*mask->data[mask->widthStep*i+j];
-      back_img[in_img->widthStep*i+j] = in_img->data[in_img->widthStep*i+j]*mask->data[mask->widthStep*i+j];
+      back_re[cols*j+i] = in_re->data[cols*j+i]*mask->data[cols*j+i];
+      back_img[cols*j+i] = in_img->data[cols*j+i]*mask->data[cols*j+i];
     }
   }
-  
   out_re->data = back_re;
   out_img->data = back_img;
 }

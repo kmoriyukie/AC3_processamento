@@ -7,7 +7,8 @@
     "istream": "c",
     "tuple": "c",
     "utility": "c",
-    "complex.h": "c"
+    "complex.h": "c",
+    "complex": "c"
   },
   "C_Cpp_Runner.warnings": [
     "-Wall",
