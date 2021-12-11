@@ -2,7 +2,7 @@
 
 #include "funcs.h"
 
-int main(){
+int main(int argc , char** argv){
     Image* imgin;
     ImageF img, img2, img3, img4;
     Image imgout;
@@ -12,7 +12,7 @@ int main(){
     int rows = imgin->rows;
     int cols = imgin->cols;
     int step = imgin->widthStep;
-    MPI_Init( int* argc , char*** argv);
+    MPI_Init( &argc , &argv);
     img = newImageF(rows, cols, step);
     img2 = newImageF(rows, cols, step);
     img3 = newImageF(rows, cols, step);
