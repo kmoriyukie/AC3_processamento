@@ -7,17 +7,15 @@ int main(int argc , char** argv){
     Image* imgin;
     ImageF img, img2, img3, img4;
     Image imgout;
-    int i,j;
+    int i,j, rows, cols, step, id, numproc;
+    MPI_Init( &argc , &argv);
 
     imgin = loadPBM("quokkasmall.pgm");
     
-    int rows = imgin->rows;
-    int cols = imgin->cols;
-    int step = imgin->widthStep;
-    int id, numproc;
+    rows = imgin->rows;
+    cols = imgin->cols;
+    step = imgin->widthStep;
 
-    MPI_Init( &argc , &argv);
-    
     img = newImageF(rows, cols, step);
     img2 = newImageF(rows, cols, step);
     img3 = newImageF(rows, cols, step);
@@ -48,7 +46,8 @@ int main(int argc , char** argv){
     fti(&img, &img2, &img3, &img4, 1);
     printf("\nFinished IDFT!\n");
     
-    for (int i = id; i < rows; i+=numproc)
+    
+    for (int i = 1; i < rows; i++)
         for (int j = 0; j < cols; j++)
             img3.data[j*img3.widthStep+i] = cabs(img3.data[j*img3.widthStep+i] + _Complex_I*img4.data[j*img3.widthStep+i]);
     
@@ -61,6 +60,8 @@ int main(int argc , char** argv){
     imgout.data = data;
     savePBM("img.pbm",&imgout);
     MPI_Finalize();
+    return 0;
+    
 }
 
     

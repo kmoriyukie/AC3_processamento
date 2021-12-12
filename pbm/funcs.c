@@ -124,10 +124,12 @@ void savePBM(char *fname, Image *image)
 
 ImageF * genlpfmask(int rows, int cols){
     double *filter = (double *)malloc(rows*cols*sizeof(double));
+    double *myfilter = (double *)malloc(rows*cols*sizeof(double));
     ImageF *filter_img  = (ImageF *)malloc(sizeof(ImageF));
-      int id, numproc;
-  MPI_Comm_rank( MPI_COMM_WORLD , &id);
-  MPI_Comm_size( MPI_COMM_WORLD , &numproc);
+    int id, numproc;
+    
+    MPI_Comm_rank( MPI_COMM_WORLD , &id);
+    MPI_Comm_size( MPI_COMM_WORLD , &numproc);
     for (int i = id; i < rows; i+=numproc)
     {
         for (int j = 0; j < cols; j++)
@@ -137,8 +139,11 @@ ImageF * genlpfmask(int rows, int cols){
             }
             else
                 filter[i*rows+j] = 0.0;
+            
+            MPI_Allgather( &filter[i*rows+j] , 1 , MPI_DOUBLE , &myfilter[i*rows+j] , 1 , MPI_DOUBLE , MPI_COMM_WORLD);
         }
     }
+    
     filter_img->rows=rows;
     filter_img->cols=cols;
     filter_img->data=filter;
@@ -156,11 +161,17 @@ void fti(ImageF * in_re, ImageF * in_img, ImageF * out_re, ImageF * out_img, int
   double complex transf_re = 0;
   double complex transf2_img = 0;
   double complex theta = 0;
+
   int rows = in_re->rows;
   int cols = in_re->cols;
   int step = in_re->cols;
+
+  double *back_re = (double *)malloc(rows*cols*sizeof(double));
+  double *back_img = (double *)malloc(rows*cols*sizeof(double));
+  double *myback_re = (double *)malloc(rows*cols*sizeof(double));
+  double *myback_img = (double *)malloc(rows*cols*sizeof(double));
+
   int id, numproc;
-  int countm = 0;
   MPI_Comm_rank( MPI_COMM_WORLD , &id);
   MPI_Comm_size( MPI_COMM_WORLD , &numproc);
   for (int k = 0; k < cols; k++)
@@ -197,12 +208,18 @@ void fti(ImageF * in_re, ImageF * in_img, ImageF * out_re, ImageF * out_img, int
             }
             transf /= cols*rows;
         }
-        out_re->data[l + step*k] = creal(transf);
-        out_img->data[l + step*k] = cimag(transf);
-        transf=0;
-           
+        
+        myback_re[l + step*k] = creal(transf);
+        myback_img[l + step*k] = cimag(transf);
+        MPI_Allgather( &myback_re[l + step*k] , 1 , MPI_DOUBLE , &back_re[l + step*k] , 1 , MPI_DOUBLE , MPI_COMM_WORLD);
+        MPI_Allgather( &myback_img[l + step*k], 1 , MPI_DOUBLE , &back_img[l + step*k] , 1 , MPI_DOUBLE , MPI_COMM_WORLD);
+        
+        transf=0;           
       }
   }
+  out_re->data = back_re;
+  out_img->data = back_img;
+ 
 }
 //----------------------------------------------------------------------------------------------
 void dofilt(ImageF * in_re, ImageF * in_img, ImageF * mask, ImageF * out_re, ImageF * out_img)
@@ -211,7 +228,11 @@ void dofilt(ImageF * in_re, ImageF * in_img, ImageF * mask, ImageF * out_re, Ima
   int cols = in_re->cols;
   double *back_re = (double *)malloc(rows*cols*sizeof(double));
   double *back_img = (double *)malloc(rows*cols*sizeof(double));
+  double *myback_re = (double *)malloc(rows*cols*sizeof(double));
+  double *myback_img = (double *)malloc(rows*cols*sizeof(double));
+  
   int id, numproc;
+  
   MPI_Comm_rank( MPI_COMM_WORLD , &id);
   MPI_Comm_size( MPI_COMM_WORLD , &numproc);
 
@@ -219,12 +240,17 @@ void dofilt(ImageF * in_re, ImageF * in_img, ImageF * mask, ImageF * out_re, Ima
   {
     for(int j = 0; j < cols; j++)
     {
-      back_re[cols*j+i] = in_re->data[cols*j+i]*mask->data[cols*j+i];
-      back_img[cols*j+i] = in_img->data[cols*j+i]*mask->data[cols*j+i];
+      myback_re[cols*j+i] = in_re->data[cols*j+i]*mask->data[cols*j+i];
+      myback_img[cols*j+i] = in_img->data[cols*j+i]*mask->data[cols*j+i];
+      MPI_Allgather( &myback_re[cols*j+i] , 1 , MPI_DOUBLE , &back_re[cols*j+i] , 1 , MPI_DOUBLE , MPI_COMM_WORLD);
+      MPI_Allgather( &myback_img[cols*j+i], 1 , MPI_DOUBLE , &back_img[cols*j+i] , 1 , MPI_DOUBLE , MPI_COMM_WORLD);
+      
     }
   }
+  
   out_re->data = back_re;
   out_img->data = back_img;
+  
 }
 //----------------------------------------------------------------------------------------
 ImageF newImageF(int rows, int cols, int widthStep){
