@@ -6,7 +6,7 @@
 #include <fcntl.h>
 #include <errno.h>
 #include <time.h>
-
+#include "mpi.h"
 
 
 #define UM_SEC 1000000000L

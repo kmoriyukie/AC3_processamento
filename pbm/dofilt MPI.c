@@ -12,7 +12,6 @@ void dofilt(ImageF * in_re, ImageF * in_img, ImageF * mask, ImageF * out_re, Ima
   double *back_re = (double *)malloc(rows*cols*sizeof(double));
   double *back_img = (double *)malloc(rows*cols*sizeof(double));
   int id, numproc;
-  MPI_Init( int* argc , char*** argv);
   MPI_Comm_rank( MPI_COMM_WORLD , &id);
   MPI_Comm_size( MPI_COMM_WORLD , &numproc);
   out_re->rows = in_re->rows;
@@ -31,7 +30,7 @@ void dofilt(ImageF * in_re, ImageF * in_img, ImageF * mask, ImageF * out_re, Ima
       back_img[in_img->widthStep*i+j] = in_img->data[in_img->widthStep*i+j]*mask->data[mask->widthStep*i+j];
     }
   }
-  MPI_Finalize();
+
   out_re->data = back_re;
   out_img->data = back_img;
 }

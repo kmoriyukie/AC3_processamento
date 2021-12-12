@@ -5,6 +5,7 @@
 #include <pam.h>
 #endif
 #include "funcs.h"
+#include "mpi.h"
 
 void teste(ImageF *in, ImageF *out)
 {
