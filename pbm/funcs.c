@@ -165,44 +165,42 @@ void fti(ImageF * in_re, ImageF * in_img, ImageF * out_re, ImageF * out_img, int
   MPI_Comm_size( MPI_COMM_WORLD , &numproc);
   for (int k = 0; k < cols; k++)
   {
-      for (int l = 0; l < rows; l++)
+      for (int l = id; l < rows; l+=numproc)
       {
         if(inverse == 0){
             for (int m = 0; m < cols; m++)
             {
-                for (int n = id; n < rows; n+=numproc)
+                for (int n = 0; n < rows; n++)
                 {
                     theta = 2.0*M_PI*((double)l*n/rows);
-                    transf2 += (in_re->data[m*step+n]+ _Complex_I*in_img->data[m*step + n])*cexp(_Complex_I*theta);
-                    countm++;                      
+                    transf2 += (in_re->data[m*step+n]+ _Complex_I*in_img->data[m*step + n])*cexp(_Complex_I*theta);                   
                 }
                 
                 theta = 2*M_PI*((double)k*m/cols);
                 transf  += transf2*cexp(_Complex_I*theta);
+                transf2=0; 
+
             }
         }
         else{
             for (int m = 0; m < cols; m++)
             {
-              for (int n = id; n < rows; n+=numproc)
+              for (int n = 0; n < rows; n++)
                 {
                     theta = -2.0*M_PI*((double)l*n/rows);
-                    transf2 += (in_re->data[m*step+n]+ _Complex_I*in_img->data[m*step + n])*cexp(_Complex_I*theta);
-                    countm++;                      
+                    transf2 += (in_re->data[m*step+n]+ _Complex_I*in_img->data[m*step + n])*cexp(_Complex_I*theta);                     
                 }
                 
                 theta = -2.0*M_PI*((double)k*m/cols);
                 transf  += transf2*cexp(_Complex_I*theta);
+                transf2=0; 
             }
             transf /= cols*rows;
         }
         out_re->data[l + step*k] = creal(transf);
         out_img->data[l + step*k] = cimag(transf);
-        MPI_Reduce( (void )out_re->data[l + step*k] ,(void )out_re->data[l + step*k] , countm , MPI_DOUBLE , MPI_SUM , 0 , MPI_COMM_WORLD);
-        MPI_Reduce( (void ) out_img->data[l + step*k] , (void )  out_img->data[l + step*k], countm , MPI_DOUBLE , MPI_SUM , 0 , MPI_COMM_WORLD);
-        countm = 0;
         transf=0;
-        transf2=0;    
+           
       }
   }
 }

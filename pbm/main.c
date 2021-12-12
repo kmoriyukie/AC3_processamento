@@ -9,7 +9,7 @@ int main(int argc , char** argv){
     Image imgout;
     int i,j;
 
-    imgin = loadPBM("lena2.pgm");
+    imgin = loadPBM("quokkasmall.pgm");
     
     int rows = imgin->rows;
     int cols = imgin->cols;
