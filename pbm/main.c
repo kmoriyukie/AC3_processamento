@@ -13,18 +13,19 @@ int main(int argc , char** argv){
     int rows = imgin->rows;
     int cols = imgin->cols;
     int step = imgin->widthStep;
-<<<<<<< HEAD
-    
-=======
+    int id, numproc;
+
     MPI_Init( &argc , &argv);
->>>>>>> origin
+    
     img = newImageF(rows, cols, step);
     img2 = newImageF(rows, cols, step);
     img3 = newImageF(rows, cols, step);
     img4 = newImageF(rows, cols, step);
     img.data = uchar2db(imgin->data, rows, cols);
     
-    for (int i = 0; i < rows; i++)
+    MPI_Comm_rank( MPI_COMM_WORLD , &id);
+    MPI_Comm_size( MPI_COMM_WORLD , &numproc);
+    for (int i = id; i < rows; i+=numproc)
     {
         for (int j = 0; j < cols; j++)
         {
@@ -46,7 +47,7 @@ int main(int argc , char** argv){
     fti(&img, &img2, &img3, &img4, 1);
     printf("\nFinished IDFT!\n");
     
-    for (int i = 0; i < rows; i++)
+    for (int i = id; i < rows; i+=numproc)
         for (int j = 0; j < cols; j++)
             img3.data[j*img3.widthStep+i] = cabs(img3.data[j*img3.widthStep+i] + _Complex_I*img4.data[j*img3.widthStep+i]);
     
@@ -58,6 +59,7 @@ int main(int argc , char** argv){
 
     imgout.data = data;
     savePBM("img.pbm",&imgout);
+    MPI_Finalize();
 }
 
     
