@@ -24,7 +24,8 @@ int main(int argc , char** argv){
     
     MPI_Comm_rank( MPI_COMM_WORLD , &id);
     MPI_Comm_size( MPI_COMM_WORLD , &numproc);
-    for (int i = id; i < rows; i+=numproc)
+    
+    for (int i = 0; i < rows; i++)
     {
         for (int j = 0; j < cols; j++)
         {
@@ -40,14 +41,17 @@ int main(int argc , char** argv){
     unsigned char * data=(unsigned char *) malloc(rows * cols*sizeof(unsigned char));
     printf("\nStarting DFT...\n");
     fti(&img, &img2, &img3, &img4, 0);
+    MPI_Barrier(MPI_COMM_WORLD);
     printf("\nFinished DFT! Started Filtering...\n");
     dofilt(&img3, &img4, mask, &img, &img2);
+    MPI_Barrier(MPI_COMM_WORLD);
     printf("\nFinished filtering! Starting IDFT!\n");
     fti(&img, &img2, &img3, &img4, 1);
+    MPI_Barrier(MPI_COMM_WORLD);
     printf("\nFinished IDFT!\n");
     
     
-    for (int i = 1; i < rows; i++)
+    for (int i = 0; i < rows; i++)
         for (int j = 0; j < cols; j++)
             img3.data[j*img3.widthStep+i] = cabs(img3.data[j*img3.widthStep+i] + _Complex_I*img4.data[j*img3.widthStep+i]);
     

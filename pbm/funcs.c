@@ -135,12 +135,12 @@ ImageF * genlpfmask(int rows, int cols){
         for (int j = 0; j < cols; j++)
         {
             if ((i < rows/4.0 || i >= 3*rows/4.0) && (j < cols/4.0 || j >= 3*cols/4.0)){
-                filter[i*rows+j] = 1.0;
+                myfilter[i*rows+j] = 1.0;
             }
             else
-                filter[i*rows+j] = 0.0;
+                myfilter[i*rows+j] = 0.0;
             
-            MPI_Allgather( &filter[i*rows+j] , 1 , MPI_DOUBLE , &myfilter[i*rows+j] , 1 , MPI_DOUBLE , MPI_COMM_WORLD);
+            MPI_Allgather( &myfilter[i*rows+j] , 1 , MPI_DOUBLE , &filter[i*rows+j] , 1 , MPI_DOUBLE , MPI_COMM_WORLD);
         }
     }
     
@@ -158,8 +158,7 @@ void fti(ImageF * in_re, ImageF * in_img, ImageF * out_re, ImageF * out_img, int
   double complex transf = 0;
   double complex transf2 = 0;
   
-  double complex transf_re = 0;
-  double complex transf2_img = 0;
+
   double complex theta = 0;
 
   int rows = in_re->rows;
@@ -208,7 +207,8 @@ void fti(ImageF * in_re, ImageF * in_img, ImageF * out_re, ImageF * out_img, int
             }
             transf /= cols*rows;
         }
-        
+        //back_re[l + step*k] = creal(transf);
+        //back_img[l + step*k] = cimag(transf);
         myback_re[l + step*k] = creal(transf);
         myback_img[l + step*k] = cimag(transf);
         MPI_Allgather( &myback_re[l + step*k] , 1 , MPI_DOUBLE , &back_re[l + step*k] , 1 , MPI_DOUBLE , MPI_COMM_WORLD);
@@ -242,8 +242,8 @@ void dofilt(ImageF * in_re, ImageF * in_img, ImageF * mask, ImageF * out_re, Ima
     {
       myback_re[cols*j+i] = in_re->data[cols*j+i]*mask->data[cols*j+i];
       myback_img[cols*j+i] = in_img->data[cols*j+i]*mask->data[cols*j+i];
-      MPI_Allgather( &myback_re[cols*j+i] , 1 , MPI_DOUBLE , &back_re[cols*j+i] , 1 , MPI_DOUBLE , MPI_COMM_WORLD);
-      MPI_Allgather( &myback_img[cols*j+i], 1 , MPI_DOUBLE , &back_img[cols*j+i] , 1 , MPI_DOUBLE , MPI_COMM_WORLD);
+      MPI_Allgather( &myback_re[cols*j+i] , 1 , MPI_DOUBLE , &back_re[cols*j+i] , 1, MPI_DOUBLE , MPI_COMM_WORLD);
+      MPI_Allgather( &myback_img[cols*j+i], 1 , MPI_DOUBLE , &back_img[cols*j+i] , 1, MPI_DOUBLE , MPI_COMM_WORLD);
       
     }
   }
